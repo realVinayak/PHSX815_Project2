@@ -2,11 +2,13 @@ import numpy as np
 from file_list_utils import read_list
 from utils import get_log_likelihood_ratio, get_fnr, get_probability_from_hist
 import matplotlib.pyplot as plt
-from compound_gaussian import MIN_X, MAX_X, ALPHA, N_samples, N_measurement, \
+from compound_gaussian import MIN_X, MAX_X, ALPHA, N_measurement, \
     DEPTH
 from histogram_utils import get_histogram_data
 
 
+# Plots of histogram of LLR for hypothesis 1 and hypothesis 2.
+# Also stores the final plot in ./outputs/histograms
 def plot_atomic_result(llr_dist_1, llr_dist_2, lambda_alpha, num_meas, depth):
     file_name = f'./outputs/histograms/measurements_{num_meas}_depth_{depth}.png'
     llr_dist_1_probs, llr_dist_1_bins = get_histogram_data(llr_dist_1,
@@ -32,6 +34,8 @@ def plot_atomic_result(llr_dist_1, llr_dist_2, lambda_alpha, num_meas, depth):
     plt.clf()
 
 
+# Takes in num_meas and depth. Loads samples from the corresponding file
+# and calculates and returns the false negative rate.
 def analyze_atomic(num_meas, depth):
     file_name = f'./outputs/measurements/measurements_{num_meas}_{depth}_hypo_'
     hypothesis_1 = read_list(f'{file_name}{1}.txt')
@@ -79,6 +83,11 @@ def analyze_atomic(num_meas, depth):
     return round(fnr, 2)
 
 
+# main driver for this file. Since we have two parameters (number of
+# measurements and depth), the false negative rate is best stored in the
+# matrix such that rows denote number of measurements and the columns denote
+# the depth. Stores false negative rate in 2-D matrix and generates a heat map.
+# Stores the plot in fnr_heatmap.png.
 def driver():
     fnr_matrix = np.zeros((N_measurement, DEPTH))
     for num_meas in range(N_measurement):

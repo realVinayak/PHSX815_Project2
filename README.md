@@ -15,7 +15,7 @@ Gaussian distribution controls the mean and standard deviation of the next one, 
 "complex". 
 
 <h2>Code Structure and Components</h2>
-1. `utils.py`: Contains two important functions:
+1. `utils.py`: Contains three important functions:
 <ul>
     <li>
         <h3>get_log_likelihood_ratio(measurement, get_first_prob, get_second_prob)</h3>
@@ -46,20 +46,19 @@ Gaussian distribution controls the mean and standard deviation of the next one, 
     all the global variables for the analysis - initial means, number of samples per experiment,
     depth of the model (complexity), percentile limit (alpha). 
  <br/>`generate_measurements(num_meas, depth)`
-    is the function that simulates `N_samples` experiments with `num_meas` measurements in each experiment. 
+    is the function that simulates `N_experiments` experiments with `num_meas` measurements in each experiment. 
     Additionally, the `depth` is the number of intermediary Gaussian distributions sampled (more info above).
     To streamline data generation, I call this function with varying `num_meas` and `depth` - defined as parameters
    at top of this file. Note that we get
-   a different set of experiments for hypothesis 1 and hypothesis 2 - that is, we will have to do the process twice
+   a different set of measurements for hypothesis 1 and hypothesis 2 - that is, we will have to do the process twice
    for each hypothesis while keeping `num_meas` and `depth` same, as it is assumed that the only difference between
     the two hypothesis is the initial mean (hyperparameter defined as $\gamma for each hypothesis). The outputs are 
     stored in `./outputs/measurements` as txt file and the filename is calculated as `measurements_{num_meas}_{depth}_hypo_{1 or 2}.txt`.
-    <br/> type `python3 compound_gaussian.py` to generate the samples.
+    <br/> Type `python3 compound_gaussian.py` to generate the samples.
 3. `analyze_data.py`: The main file to analyze the measurements from experiments from `compound_gaussian.py`. The main 
     function used in the file is the `analyze_atomic(num_meas, depth)` which analyzes the measurements from the file `measurements_{num_meas}_{depth}_hypo_1.txt` and `measurements_{num_meas}_{depth}_hypo_2.txt`.
     This function returns the false negative rate between the test hypothesis and the null hypothesis, both of which are complex
-    hypothesis with number of measurements in an experiment equal to `num_meas` and depth (intermediary Gaussian steps) equal to `depth`. Since the 
-    <br/>Additionally, this file generates the log-likelihood ratio's histogram conditioned on the hypothesis, thus depends on `num_meas` and `depth`. The log-likelihood ratio
+    hypothesis with number of measurements in an experiment equal to `num_meas` and depth (intermediary Gaussian steps) equal to `depth`. <br/>Additionally, this file generates the log-likelihood ratio's histogram conditioned on the hypothesis, thus depends on `num_meas` and `depth`. The log-likelihood ratio
     histogram for a particular value of `num_meas` and `depth` is stored in `./outputs/histograms/measurements_{num_meas}_depth_{depth}.png`.
     <br/>Further, the file stores the false negative rate for each pair of `num_meas` and `depth` simulated by the generator
     and produces a heat-map. The false negative rate's heatmap is stored in the main directory as `fnr_heatmap.png`. 

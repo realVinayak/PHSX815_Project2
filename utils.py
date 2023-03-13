@@ -7,7 +7,7 @@ def get_log_likelihood_ratio(measurement, get_first_prob, get_second_prob):
     first_prob = get_first_prob(measurement)
     second_prob = get_second_prob(measurement)
     log_likelihood_ratio = math.log(
-        max(first_prob, 10**(-20)) / max(second_prob, 10**(-20)))
+        max(first_prob, 10**(-50)) / max(second_prob, 10**(-50)))
     return log_likelihood_ratio
 
 # Returns false negative rate given llr measurements and lambda threshold

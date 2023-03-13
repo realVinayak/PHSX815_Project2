@@ -18,3 +18,14 @@ def get_fnr(llr_measurements, lambda_threshold):
             break
         llr_passed_count += 1
     return llr_passed_count / len(llr_measurements)
+
+def get_probability_from_hist(hist_data, hist_bins, sample):
+    bin_index = 0
+    probability = 0
+    if hist_bins[0] <= sample <= hist_bins[-1]:
+        while bin_index <= len(hist_bins) - 2:
+            if hist_bins[bin_index] <= sample <= hist_bins[bin_index + 1]:
+                break
+            bin_index += 1
+        probability = hist_data[bin_index]
+    return probability

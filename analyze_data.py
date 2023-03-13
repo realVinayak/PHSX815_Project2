@@ -1,21 +1,10 @@
 import numpy as np
 from file_list_utils import read_list
-from utils import get_log_likelihood_ratio, get_fnr
+from utils import get_log_likelihood_ratio, get_fnr, get_probability_from_hist
 import matplotlib.pyplot as plt
-from compound_gaussian import MIN_X, MAX_X, ALPHA, N_samples, N_measurement, DEPTH
+from compound_gaussian import MIN_X, MAX_X, ALPHA, N_samples, N_measurement, \
+    DEPTH
 from histogram_utils import get_histogram_data
-
-
-def get_probability_from_hist(hist_data, hist_bins, sample):
-    bin_index = 0
-    probability = 0
-    if hist_bins[0] <= sample <= hist_bins[-1]:
-        while bin_index <= len(hist_bins) - 2:
-            if hist_bins[bin_index] <= sample <= hist_bins[bin_index + 1]:
-                break
-            bin_index += 1
-        probability = hist_data[bin_index]
-    return probability
 
 
 def plot_atomic_result(llr_dist_1, llr_dist_2, lambda_alpha, num_meas, depth):
@@ -36,7 +25,8 @@ def plot_atomic_result(llr_dist_1, llr_dist_2, lambda_alpha, num_meas, depth):
     plt.xlabel('\u03BB = L(H2)/L(H1)')
     plt.ylabel('Probability')
     plt.title(f'{num_meas} number of measurements and depth {depth}')
-    plt.legend(['P(\u03BB|H1)', 'P(\u03BB|H2)', f'\u03BB\u1D45 = {round(lambda_alpha, 2)}'])
+    plt.legend(['P(\u03BB|H1)', 'P(\u03BB|H2)',
+                f'\u03BB\u1D45 = {round(lambda_alpha, 2)}'])
     plt.savefig(file_name)
     plt.show()
     plt.clf()
@@ -84,25 +74,29 @@ def analyze_atomic(num_meas, depth):
     print('depth: ', depth)
     print('lamda alpha: ', _lambda_alpha)
     print('false negative rate: ', fnr)
-    plot_atomic_result(llr_distribution_h1, llr_distribution_h2, _lambda_alpha, num_meas, depth)
+    plot_atomic_result(llr_distribution_h1, llr_distribution_h2, _lambda_alpha,
+                       num_meas, depth)
     return round(fnr, 2)
+
 
 def driver():
     fnr_matrix = np.zeros((N_measurement, DEPTH))
     for num_meas in range(N_measurement):
         for depth in range(DEPTH):
-            fnr_matrix[num_meas][depth] = analyze_atomic(num_meas+1, depth+1)
+            fnr_matrix[num_meas][depth] = analyze_atomic(num_meas + 1,
+                                                         depth + 1)
     print(fnr_matrix)
     fig, ax = plt.subplots()
     im = ax.imshow(fnr_matrix, cmap='hot')
 
     for row in range(N_measurement):
         for col in range(DEPTH):
-            text = ax.text(col, row, fnr_matrix[row][col], ha="center", va="center",
+            text = ax.text(col, row, fnr_matrix[row][col], ha="center",
+                           va="center",
                            color="w" if fnr_matrix[row][col] < 0.5 else 'black')
 
-    ax.set_yticks(range(N_measurement), labels=range(1, N_measurement+1))
-    ax.set_xticks(range(DEPTH), labels=range(1, DEPTH+1))
+    ax.set_yticks(range(N_measurement), labels=range(1, N_measurement + 1))
+    ax.set_xticks(range(DEPTH), labels=range(1, DEPTH + 1))
     plt.title('False Negative Rate Heatmap')
     ax.figure.colorbar(im)
     plt.ylabel('Number of Measurements')
